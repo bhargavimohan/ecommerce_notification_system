@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+  # MySQL Database Service
+  db:
+    container_name: local_db
+    image: mysql:5.7
+    environment:
+      MYSQL_DATABASE: store_allowances 
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: rootpassword
+    volumes:
+      - ./db.sql:/docker-entrypoint-initdb.d/db.sql
+      - ./migration.sql:/docker-entrypoint-initdb.d/migration.sql
+    ports:
+      - "3306:3306"
+
+  # Python App Service
+  app:
+    build: .
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: "mysql+mysqlconnector://user:password@db/store_allowances"
